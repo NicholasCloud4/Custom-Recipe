@@ -4,6 +4,7 @@ import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import Nutrition from "./components/Nutrition";
 
 const Home = () => {
     const [recipe, setRecipe] = useState({
@@ -27,12 +28,9 @@ const Home = () => {
         fetch("/api")
             .then((res) => res.json())
             .then((data) => {
-                //console.log(data);
                 setRecipe(data);
             });
     }, []);
-
-    console.log(recipe);
 
     return (
         <Box
@@ -40,86 +38,159 @@ const Home = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                minHeight: "100vh",
+                backgroundColor: "#f7f5f2",
+                padding: "2rem",
             }}
         >
             <Box
                 sx={{
-                    backgroundColor: "#FFFFFF",
-                    marginTop: "5rem",
-                    padding: "2rem",
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
                     borderRadius: "1rem",
+                    padding: "2rem",
+                    maxWidth: "800px",
+                    width: "100%",
                 }}
             >
-                <Image
-                    src={recipe.image}
-                    width={600}
-                    height={300}
-                    alt="Omelette"
-                ></Image>
-                <Typography>{recipe.title}</Typography>
-                <Typography>{recipe.description}</Typography>
+                {recipe.image && (
+                    <Image
+                        src={recipe.image}
+                        width={800}
+                        height={400}
+                        alt={recipe.title || "Recipe Image"}
+                        style={{ borderRadius: "0.5rem" }}
+                    />
+                )}
 
-                <Box>
-                    <Typography>Preperation Time</Typography>
-                    <Typography>{recipe.totalPrepTime}</Typography>
-                    <Typography>{recipe.preparationTime}</Typography>
-                    <Typography>{recipe.cookingTime}</Typography>
+                <Typography
+                    variant="h4"
+                    component="h1"
+                    sx={{
+                        fontWeight: "bold",
+                        marginTop: "1.5rem",
+                        color: "#2b2b2b",
+                        textAlign: "center",
+                    }}
+                >
+                    {recipe.title || "Delicious Recipe"}
+                </Typography>
+
+                <Typography
+                    sx={{
+                        marginTop: "1rem",
+                        color: "#555555",
+                        textAlign: "center",
+                        lineHeight: 1.6,
+                    }}
+                >
+                    {recipe.description}
+                </Typography>
+
+                <Box sx={{ marginTop: "2rem" }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: "bold",
+                            color: "#854632",
+                            marginBottom: "0.5rem",
+                        }}
+                    >
+                        Preparation Details
+                    </Typography>
+                    <Typography>
+                        Total Preparation Time: {recipe.totalPrepTime || "N/A"}
+                    </Typography>
+                    <Typography>
+                        Preparation Time: {recipe.preparationTime || "N/A"}
+                    </Typography>
+                    <Typography>
+                        Cooking Time: {recipe.cookingTime || "N/A"}
+                    </Typography>
                 </Box>
 
-                <Box>
+                <Box sx={{ marginTop: "2rem" }}>
                     <Typography
+                        variant="h6"
                         sx={{
-                            color: "#854632",
-                            fontSize: "1.5rem",
                             fontWeight: "bold",
+                            color: "#854632",
+                            marginBottom: "0.5rem",
                         }}
                     >
                         Ingredients
                     </Typography>
-                    {recipe.ingredients.map((ingredient) => {
-                        return (
-                            <Typography key={ingredient}>
-                                {ingredient}
+                    {recipe.ingredients.length > 0 ? (
+                        recipe.ingredients.map((ingredient, index) => (
+                            <Typography key={index} sx={{ color: "#555555" }}>
+                                - {ingredient}
                             </Typography>
-                        );
-                    })}
+                        ))
+                    ) : (
+                        <Typography>No ingredients listed.</Typography>
+                    )}
                 </Box>
 
-                <Box>
+                <Box sx={{ marginTop: "2rem" }}>
                     <Typography
+                        variant="h6"
                         sx={{
-                            color: "#854632",
-                            fontSize: "1.5rem",
                             fontWeight: "bold",
+                            color: "#854632",
+                            marginBottom: "0.5rem",
                         }}
                     >
                         Instructions
                     </Typography>
-                    {recipe.instructions.map((instruction) => {
-                        return (
-                            <Typography key={instruction}>
-                                {instruction}
+                    {recipe.instructions.length > 0 ? (
+                        recipe.instructions.map((instruction, index) => (
+                            <Typography
+                                key={index}
+                                sx={{
+                                    color: "#555555",
+                                    marginBottom: "0.5rem",
+                                }}
+                            >
+                                {index + 1}. {instruction}
                             </Typography>
-                        );
-                    })}
+                        ))
+                    ) : (
+                        <Typography>No instructions provided.</Typography>
+                    )}
                 </Box>
 
-                <Box>
+                <Box sx={{ marginTop: "2rem" }}>
                     <Typography
+                        variant="h6"
                         sx={{
-                            color: "#854632",
-                            fontSize: "1.5rem",
                             fontWeight: "bold",
+                            color: "#854632",
+                            marginBottom: "0.5rem",
                         }}
                     >
                         Nutrition
                     </Typography>
+                    <Typography sx={{ color: "#555555", marginBottom: "1rem" }}>
+                        Nutritional values per serving (without additional
+                        fillings):
+                    </Typography>
+                    <Nutrition
+                        category="Calories"
+                        value={recipe.nutrition.calories || "N/A"}
+                    />
+                    <Nutrition
+                        category="Carbs"
+                        value={recipe.nutrition.carbs || "N/A"}
+                    />
+                    <Nutrition
+                        category="Protein"
+                        value={recipe.nutrition.protein || "N/A"}
+                    />
+                    <Nutrition
+                        category="Fat"
+                        value={recipe.nutrition.fat || "N/A"}
+                    />
                 </Box>
-                <Typography>
-                    The table below shows nutritional value per serving without
-                    the additional fillings
-                </Typography>
-                <Typography>{recipe.nutrition.calories}</Typography>
             </Box>
         </Box>
     );
